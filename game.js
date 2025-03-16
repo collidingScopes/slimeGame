@@ -11,6 +11,9 @@ let lastMoldTime = 0;       // Time of last mold spawn
 let moldSpawnRate = INITIAL_MOLD_SPAWN_RATE;  // Time between mold spawns
 let moldGrowthRate = INITIAL_MOLD_GROWTH_RATE;  // Time between mold growth
 let lastMoldGrowth = 0;     // Time of last mold growth
+let lastRenderTime = 0;     // For frame rate control
+const TARGET_FPS = 30;      // Target frames per second
+const FRAME_TIME = 1000 / TARGET_FPS;
 
 // Initialize the canvas
 const canvas = document.getElementById('gameCanvas');
@@ -49,16 +52,34 @@ function initGame() {
     minimapCanvas.addEventListener('click', handleMinimapClick);
     window.addEventListener('scroll', updateVisibleArea);
     window.addEventListener('resize', updateVisibleArea);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    // Initialize pattern cache for faster rendering
+    initPatternCache();
     
     // Initialize timers
     lastMoldTime = Date.now();
     lastMoldGrowth = Date.now();
+    lastRenderTime = Date.now();
     
     // Initial update of visible area
     updateVisibleArea();
     
     // Start game loop
     gameLoop();
+}
+
+// Handle visibility change to pause processing when tab is inactive
+function handleVisibilityChange() {
+    if (document.hidden) {
+        // Tab is hidden, no need to update times
+    } else {
+        // Tab is visible again, reset timers to prevent sudden mold growth after inactivity
+        lastMoldTime = Date.now();
+        lastMoldGrowth = Date.now();
+        lastRenderTime = Date.now();
+        updateVisibleArea();
+    }
 }
 
 // Update the visible area based on scroll position
@@ -109,7 +130,7 @@ function updateScoreboard() {
     drawMinimap();
 }
 
-// Draw the minimap
+// Draw the minimap with optimization
 function drawMinimap() {
     // Clear minimap
     minimapCtx.clearRect(0, 0, minimapWidth, minimapHeight);
@@ -118,12 +139,45 @@ function drawMinimap() {
     const scaleX = minimapWidth / GRID_WIDTH;
     const scaleY = minimapHeight / GRID_HEIGHT;
     
-    // Draw terrain representation
-    for (let y = 0; y < GRID_HEIGHT; y++) {
-        for (let x = 0; x < GRID_WIDTH; x++) {
-            const terrainType = grid[y][x];
-            minimapCtx.fillStyle = TERRAIN_COLORS[terrainType];
-            minimapCtx.fillRect(x * scaleX, y * scaleY, scaleX, scaleY);
+    // Draw terrain representation with optimization (draw in larger blocks)
+    const blockSize = 2; // Combine cells for faster drawing
+    
+    for (let y = 0; y < GRID_HEIGHT; y += blockSize) {
+        for (let x = 0; x < GRID_WIDTH; x += blockSize) {
+            // Determine dominant terrain in this block
+            let terrainCounts = new Array(TERRAIN_COLORS.length).fill(0);
+            
+            // Count terrain types in this block
+            for (let by = 0; by < blockSize && y + by < GRID_HEIGHT; by++) {
+                for (let bx = 0; bx < blockSize && x + bx < GRID_WIDTH; bx++) {
+                    terrainCounts[grid[y + by][x + bx]]++;
+                }
+            }
+            
+            // Find most common terrain type
+            let dominantTerrain = 0;
+            let maxCount = 0;
+            
+            for (let t = 0; t < terrainCounts.length; t++) {
+                if (terrainCounts[t] > maxCount) {
+                    maxCount = terrainCounts[t];
+                    dominantTerrain = t;
+                }
+            }
+            
+            // Prioritize mold in visualization
+            if (terrainCounts[TERRAIN.MOLD] > 0) {
+                dominantTerrain = TERRAIN.MOLD;
+            }
+            
+            // Draw the block
+            minimapCtx.fillStyle = TERRAIN_COLORS[dominantTerrain];
+            minimapCtx.fillRect(
+                x * scaleX,
+                y * scaleY,
+                blockSize * scaleX,
+                blockSize * scaleY
+            );
         }
     }
     
@@ -164,11 +218,19 @@ function restartGame() {
 function gameLoop() {
     const currentTime = Date.now();
     
-    // Clear the canvas
-    ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    // Skip rendering if the game tab is inactive
+    if (document.hidden) {
+        requestAnimationFrame(gameLoop);
+        return;
+    }
     
-    // Draw the grid
-    drawGrid();
+    // Limit frame rate for better performance
+    if (currentTime - lastRenderTime < FRAME_TIME) {
+        requestAnimationFrame(gameLoop);
+        return;
+    }
+    
+    lastRenderTime = currentTime;
     
     // Spawn new mold at intervals
     if (currentTime - lastMoldTime > moldSpawnRate) {
@@ -182,7 +244,10 @@ function gameLoop() {
         lastMoldGrowth = currentTime;
     }
     
-    // Continue the game loop
+    // Draw the visible part of the grid
+    drawGrid();
+    
+    // Continue the game loop with optimized animation frame
     requestAnimationFrame(gameLoop);
 }
 

@@ -1,9 +1,12 @@
 // Game constants
 const CELL_SIZE = 40;
 const GRID_WIDTH = 25;
-const GRID_HEIGHT = 100;
+const GRID_HEIGHT = 400;
 const CANVAS_WIDTH = CELL_SIZE * GRID_WIDTH;
 const CANVAS_HEIGHT = CELL_SIZE * GRID_HEIGHT;
+
+// Viewport settings for rendering optimization
+const VIEWPORT_BUFFER = 8; // Extra rows to render beyond visible area
 
 // Terrain types
 const TERRAIN = {
