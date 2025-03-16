@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mold Defense - Pokémon Style</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Mold Defense</h1>
+    <div id="scoreboard">
+        <div class="score-item">
+            <span>Mold Defeated</span>
+            <span id="defeated" class="score-value defeated">0</span>
+        </div>
+        <div class="score-item">
+            <span>Difficulty</span>
+            <span id="difficulty" class="score-value">1</span>
+        </div>
+        <div class="score-item">
+            <span>Active Mold</span>
+            <span id="active" class="score-value active">0</span>
+        </div>
+    </div>
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+        <div id="game-over">
+            <h2>Game Over!</h2>
+            <p>The mold has completely taken over the world.</p>
+            <p>Your final score: <span id="final-score">0</span></p>
+            <button id="restart-btn">Play Again</button>
+        </div>
+    </div>
+
+    <script src="constants.js"></script>
+    <script src="terrain.js"></script>
+    <script src="mold.js"></script>
+    <script src="renderer.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
