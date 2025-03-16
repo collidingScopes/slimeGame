@@ -15,6 +15,14 @@ function spawnMold() {
       if (grid[y][x] !== TERRAIN.MOLD) {
           grid[y][x] = TERRAIN.MOLD;
           moldSpots.push({x, y, size: 1, growthRate: 1});
+          
+          // Play sound if within visible area to alert player
+          const cellTop = y * CELL_SIZE;
+          const visibleBottom = visibleAreaTop + visibleAreaHeight;
+          if (cellTop >= visibleAreaTop && cellTop <= visibleBottom) {
+              playMoldAlert();
+          }
+          
           break;
       }
       
@@ -31,6 +39,31 @@ function spawnMold() {
       moldSpawnRate = Math.max(1000, moldSpawnRate - 500);
       moldGrowthRate = Math.max(1000, moldGrowthRate - 500);
   }
+  
+  // Update indicators for players to find mold
+  updateMoldIndicator();
+}
+
+// Play a sound alert when mold appears in visible area
+function playMoldAlert() {
+  // Create and play a short beep sound
+  const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  const oscillator = audioContext.createOscillator();
+  const gainNode = audioContext.createGain();
+  
+  oscillator.type = 'sine';
+  oscillator.frequency.value = 440;
+  gainNode.gain.value = 0.1;
+  
+  oscillator.connect(gainNode);
+  gainNode.connect(audioContext.destination);
+  
+  oscillator.start();
+  
+  // Stop after a short duration
+  setTimeout(() => {
+      oscillator.stop();
+  }, 200);
 }
 
 // Grow existing mold spots

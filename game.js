@@ -18,6 +18,18 @@ const ctx = canvas.getContext('2d');
 canvas.width = CANVAS_WIDTH;
 canvas.height = CANVAS_HEIGHT;
 
+// Initialize minimap elements
+const minimapCanvas = document.getElementById('minimap');
+const minimapCtx = minimapCanvas.getContext('2d');
+const minimapWidth = 150;
+const minimapHeight = Math.floor(minimapWidth * (GRID_HEIGHT / GRID_WIDTH));
+minimapCanvas.width = minimapWidth;
+minimapCanvas.height = minimapHeight;
+
+// Visible area tracking
+let visibleAreaTop = 0;
+const visibleAreaHeight = window.innerHeight - 200; // Approximate visible height
+
 // Scoreboard elements
 const defeatedEl = document.getElementById('defeated');
 const activeEl = document.getElementById('active');
@@ -34,13 +46,42 @@ function initGame() {
     // Set up event listeners
     canvas.addEventListener('click', handleCanvasClick);
     restartBtn.addEventListener('click', restartGame);
+    minimapCanvas.addEventListener('click', handleMinimapClick);
+    window.addEventListener('scroll', updateVisibleArea);
     
     // Initialize timers
     lastMoldTime = Date.now();
     lastMoldGrowth = Date.now();
     
+    // Initial update of visible area
+    updateVisibleArea();
+    
     // Start game loop
     gameLoop();
+}
+
+// Update the visible area based on scroll position
+function updateVisibleArea() {
+    const rect = canvas.getBoundingClientRect();
+    visibleAreaTop = rect.top < 0 ? Math.abs(rect.top) : 0;
+    
+    // Update minimap
+    drawMinimap();
+}
+
+// Handle minimap click to navigate to different areas
+function handleMinimapClick(event) {
+    const rect = minimapCanvas.getBoundingClientRect();
+    const clickY = event.clientY - rect.top;
+    
+    // Calculate the corresponding position in the main canvas
+    const targetY = (clickY / minimapHeight) * CANVAS_HEIGHT;
+    
+    // Scroll to that position
+    window.scrollTo({
+        top: canvas.offsetTop + targetY - window.innerHeight / 2,
+        behavior: 'smooth'
+    });
 }
 
 // Handle canvas click
@@ -62,6 +103,62 @@ function handleCanvasClick(event) {
 function updateScoreboard() {
     defeatedEl.textContent = defeatedCount;
     activeEl.textContent = moldSpots.length;
+    
+    // Update minimap
+    drawMinimap();
+}
+
+// Draw the minimap
+function drawMinimap() {
+    // Clear minimap
+    minimapCtx.clearRect(0, 0, minimapWidth, minimapHeight);
+    
+    // Scale factors
+    const scaleX = minimapWidth / GRID_WIDTH;
+    const scaleY = minimapHeight / GRID_HEIGHT;
+    
+    // Draw terrain representation
+    for (let y = 0; y < GRID_HEIGHT; y++) {
+        for (let x = 0; x < GRID_WIDTH; x++) {
+            const terrainType = grid[y][x];
+            minimapCtx.fillStyle = TERRAIN_COLORS[terrainType];
+            minimapCtx.fillRect(x * scaleX, y * scaleY, scaleX, scaleY);
+        }
+    }
+    
+    // Draw visible area indicator
+    const visibleTop = visibleAreaTop / CANVAS_HEIGHT * minimapHeight;
+    const visibleHeight = visibleAreaHeight / CANVAS_HEIGHT * minimapHeight;
+    
+    minimapCtx.strokeStyle = '#ffffff';
+    minimapCtx.lineWidth = 2;
+    minimapCtx.strokeRect(0, visibleTop, minimapWidth, visibleHeight);
+}
+
+// Update mold indicator to help players find mold
+function updateMoldIndicator() {
+    if (gameOver) return;
+    
+    // Calculate visible cells
+    const cellsInView = Math.ceil(visibleAreaHeight / CELL_SIZE);
+    const startRow = Math.floor(visibleAreaTop / CELL_SIZE);
+    const endRow = Math.min(startRow + cellsInView, GRID_HEIGHT - 1);
+    
+    // Check if any mold is out of visible area
+    let hasMoldAbove = false;
+    let hasMoldBelow = false;
+    
+    for (const spot of moldSpots) {
+        if (spot.y < startRow) {
+            hasMoldAbove = true;
+        } else if (spot.y > endRow) {
+            hasMoldBelow = true;
+        }
+    }
+    
+    // Update indicators
+    document.getElementById('mold-above').style.display = hasMoldAbove ? 'block' : 'none';
+    document.getElementById('mold-below').style.display = hasMoldBelow ? 'block' : 'none';
 }
 
 // End game
@@ -109,6 +206,9 @@ function gameLoop() {
         growMold();
         lastMoldGrowth = currentTime;
     }
+    
+    // Update minimap indicator if mold is present
+    updateMoldIndicator();
     
     // Continue the game loop
     requestAnimationFrame(gameLoop);

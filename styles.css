@@ -24,6 +24,60 @@ canvas {
 
 #game-container {
     position: relative;
+    margin-bottom: 50px;
+}
+
+#minimap-container {
+    position: fixed;
+    right: 20px;
+    top: 120px;
+    background: rgba(15, 23, 42, 0.8);
+    border: 3px solid #64748b;
+    border-radius: 8px;
+    padding: 10px;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+#minimap {
+    display: block;
+    border: 2px solid #475569;
+    image-rendering: pixelated;
+}
+
+.minimap-label {
+    text-align: center;
+    font-size: 12px;
+    margin-bottom: 5px;
+    color: #ffd700;
+}
+
+.mold-indicator {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #ff6666;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 14px;
+    z-index: 100;
+    display: none;
+    animation: pulse 1.5s infinite;
+}
+
+#mold-above {
+    top: 80px;
+}
+
+#mold-below {
+    bottom: 30px;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.7; }
+    50% { opacity: 1; }
+    100% { opacity: 0.7; }
 }
 
 #scoreboard {
