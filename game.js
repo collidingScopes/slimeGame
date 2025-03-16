@@ -48,6 +48,7 @@ function initGame() {
     restartBtn.addEventListener('click', restartGame);
     minimapCanvas.addEventListener('click', handleMinimapClick);
     window.addEventListener('scroll', updateVisibleArea);
+    window.addEventListener('resize', updateVisibleArea);
     
     // Initialize timers
     lastMoldTime = Date.now();
@@ -135,32 +136,6 @@ function drawMinimap() {
     minimapCtx.strokeRect(0, visibleTop, minimapWidth, visibleHeight);
 }
 
-// Update mold indicator to help players find mold
-function updateMoldIndicator() {
-    if (gameOver) return;
-    
-    // Calculate visible cells
-    const cellsInView = Math.ceil(visibleAreaHeight / CELL_SIZE);
-    const startRow = Math.floor(visibleAreaTop / CELL_SIZE);
-    const endRow = Math.min(startRow + cellsInView, GRID_HEIGHT - 1);
-    
-    // Check if any mold is out of visible area
-    let hasMoldAbove = false;
-    let hasMoldBelow = false;
-    
-    for (const spot of moldSpots) {
-        if (spot.y < startRow) {
-            hasMoldAbove = true;
-        } else if (spot.y > endRow) {
-            hasMoldBelow = true;
-        }
-    }
-    
-    // Update indicators
-    document.getElementById('mold-above').style.display = hasMoldAbove ? 'block' : 'none';
-    document.getElementById('mold-below').style.display = hasMoldBelow ? 'block' : 'none';
-}
-
 // End game
 function endGame() {
     gameOver = true;
@@ -206,9 +181,6 @@ function gameLoop() {
         growMold();
         lastMoldGrowth = currentTime;
     }
-    
-    // Update minimap indicator if mold is present
-    updateMoldIndicator();
     
     // Continue the game loop
     requestAnimationFrame(gameLoop);

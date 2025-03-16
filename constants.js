@@ -1,7 +1,7 @@
 // Game constants
 const CELL_SIZE = 40;
 const GRID_WIDTH = 25;
-const GRID_HEIGHT = 40;
+const GRID_HEIGHT = 100;
 const CANVAS_WIDTH = CELL_SIZE * GRID_WIDTH;
 const CANVAS_HEIGHT = CELL_SIZE * GRID_HEIGHT;
 
