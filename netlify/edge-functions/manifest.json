@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "functions": [
+    {
+      "path": "/ws",
+      "function": "websocket",
+      "cache": false
+    }
+  ]
+}
