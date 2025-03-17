@@ -172,8 +172,7 @@ function createSimpleCleansingEffect(x, y) {
   
   // Restore cell after a brief flash
   setTimeout(() => {
-    // Only redraw the affected cell if it exists
-    if (y >= 0 && y < grid.length && x >= 0 && x < grid[y].length) {
+      // Only redraw the affected cell
       const terrainType = grid[y][x];
       
       // Draw base color
@@ -186,28 +185,5 @@ function createSimpleCleansingEffect(x, y) {
       // Draw grid line
       ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
       ctx.strokeRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-    }
   }, 100);
-}
-
-// Create cleansing effect when removing mold (original animation - kept for reference)
-function createCleansingEffect(x, y) {
-  const centerX = x * CELL_SIZE + CELL_SIZE / 2;
-  const centerY = y * CELL_SIZE + CELL_SIZE / 2;
-  
-  // Draw expanding circle
-  let radius = 5;
-  const maxRadius = CELL_SIZE;
-  const interval = setInterval(() => {
-      ctx.beginPath();
-      ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(255, 255, 255, ' + (1 - radius/maxRadius) + ')';
-      ctx.lineWidth = 3;
-      ctx.stroke();
-      
-      radius += 3;
-      if (radius >= maxRadius) {
-          clearInterval(interval);
-      }
-  }, 30);
 }
