@@ -22,6 +22,11 @@
             <span id="active" class="score-value active">0</span>
         </div>
     </div>
+    <div id="mold-indicators">
+        <div id="topMoldIndicator" class="mold-indicator top" title="Mold detected above!"></div>
+        <div id="bottomMoldIndicator" class="mold-indicator bottom" title="Mold detected below!"></div>
+    </div>
+    
     <div id="game-container">
         <canvas id="gameCanvas"></canvas>
         <div id="game-over">
@@ -30,12 +35,6 @@
             <p>Your final score: <span id="final-score">0</span></p>
             <button id="restart-btn">Play Again</button>
         </div>
-    </div>
-    
-    <div id="minimap-container">
-        <div class="minimap-label">World Map</div>
-        <canvas id="minimap"></canvas>
-        <div class="minimap-label">Click to navigate</div>
     </div>
 
     <script src="constants.js"></script>

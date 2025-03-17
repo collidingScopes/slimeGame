@@ -31,6 +31,9 @@ function spawnMold() {
       moldSpawnRate = Math.max(1000, moldSpawnRate - 500);
       moldGrowthRate = Math.max(1000, moldGrowthRate - 500);
   }
+  
+  // Update mold indicators since a new mold spot was added
+  updateMoldIndicators();
 }
 
 // Grow existing mold spots with optimized algorithm
@@ -81,6 +84,9 @@ function growMold() {
   if (moldSpots.length > 0 && moldSpots.length % 50 === 0) {
       checkGameOver();
   }
+  
+  // Update mold indicators after growth
+  updateMoldIndicators();
 }
 
 // Optimized game over check
@@ -144,6 +150,9 @@ function removeMold(cellX, cellY) {
       // Simplified cleansing effect for better performance
       createSimpleCleansingEffect(cellX, cellY);
       
+      // Update mold indicators after removing mold
+      updateMoldIndicators();
+      
       return true;
   }
   
@@ -177,26 +186,4 @@ function createSimpleCleansingEffect(x, y) {
       ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
       ctx.strokeRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
   }, 100);
-}
-
-// Create cleansing effect when removing mold (original animation - kept for reference)
-function createCleansingEffect(x, y) {
-  const centerX = x * CELL_SIZE + CELL_SIZE / 2;
-  const centerY = y * CELL_SIZE + CELL_SIZE / 2;
-  
-  // Draw expanding circle
-  let radius = 5;
-  const maxRadius = CELL_SIZE;
-  const interval = setInterval(() => {
-      ctx.beginPath();
-      ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(255, 255, 255, ' + (1 - radius/maxRadius) + ')';
-      ctx.lineWidth = 3;
-      ctx.stroke();
-      
-      radius += 3;
-      if (radius >= maxRadius) {
-          clearInterval(interval);
-      }
-  }, 30);
 }

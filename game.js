@@ -21,13 +21,9 @@ const ctx = canvas.getContext('2d');
 canvas.width = CANVAS_WIDTH;
 canvas.height = CANVAS_HEIGHT;
 
-// Initialize minimap elements
-const minimapCanvas = document.getElementById('minimap');
-const minimapCtx = minimapCanvas.getContext('2d');
-const minimapWidth = 150;
-const minimapHeight = Math.floor(minimapWidth * (GRID_HEIGHT / GRID_WIDTH));
-minimapCanvas.width = minimapWidth;
-minimapCanvas.height = minimapHeight;
+// Mold indicators
+const topIndicator = document.getElementById('topMoldIndicator');
+const bottomIndicator = document.getElementById('bottomMoldIndicator');
 
 // Visible area tracking
 let visibleAreaTop = 0;
@@ -49,7 +45,6 @@ function initGame() {
     // Set up event listeners
     canvas.addEventListener('click', handleCanvasClick);
     restartBtn.addEventListener('click', restartGame);
-    minimapCanvas.addEventListener('click', handleMinimapClick);
     window.addEventListener('scroll', updateVisibleArea);
     window.addEventListener('resize', updateVisibleArea);
     document.addEventListener('visibilitychange', handleVisibilityChange);
@@ -87,23 +82,43 @@ function updateVisibleArea() {
     const rect = canvas.getBoundingClientRect();
     visibleAreaTop = rect.top < 0 ? Math.abs(rect.top) : 0;
     
-    // Update minimap
-    drawMinimap();
+    // Update mold indicators
+    updateMoldIndicators();
 }
 
-// Handle minimap click to navigate to different areas
-function handleMinimapClick(event) {
-    const rect = minimapCanvas.getBoundingClientRect();
-    const clickY = event.clientY - rect.top;
+// Update mold indicators to show if there is mold above or below current view
+function updateMoldIndicators() {
+    // Get current scroll position and window height
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const windowHeight = window.innerHeight;
+    const canvasRect = canvas.getBoundingClientRect();
     
-    // Calculate the corresponding position in the main canvas
-    const targetY = (clickY / minimapHeight) * CANVAS_HEIGHT;
+    // Calculate visible range in game coordinates
+    const visibleTop = Math.max(0, scrollTop - canvas.offsetTop);
+    const visibleBottom = visibleTop + windowHeight;
     
-    // Scroll to that position
-    window.scrollTo({
-        top: canvas.offsetTop + targetY - window.innerHeight / 2,
-        behavior: 'smooth'
-    });
+    let moldAbove = false;
+    let moldBelow = false;
+    
+    // Check for mold above and below current view
+    for (const spot of moldSpots) {
+        const spotY = spot.y * CELL_SIZE + canvas.offsetTop;
+        
+        if (spotY < visibleTop) {
+            moldAbove = true;
+        }
+        
+        if (spotY > visibleBottom) {
+            moldBelow = true;
+        }
+        
+        // If we've already found mold in both directions, no need to check further
+        if (moldAbove && moldBelow) break;
+    }
+    
+    // Update indicator visibility
+    topIndicator.style.display = moldAbove ? 'block' : 'none';
+    bottomIndicator.style.display = moldBelow ? 'block' : 'none';
 }
 
 // Handle canvas click
@@ -126,68 +141,8 @@ function updateScoreboard() {
     defeatedEl.textContent = defeatedCount;
     activeEl.textContent = moldSpots.length;
     
-    // Update minimap
-    drawMinimap();
-}
-
-// Draw the minimap with optimization
-function drawMinimap() {
-    // Clear minimap
-    minimapCtx.clearRect(0, 0, minimapWidth, minimapHeight);
-    
-    // Scale factors
-    const scaleX = minimapWidth / GRID_WIDTH;
-    const scaleY = minimapHeight / GRID_HEIGHT;
-    
-    // Draw terrain representation with optimization (draw in larger blocks)
-    const blockSize = 2; // Combine cells for faster drawing
-    
-    for (let y = 0; y < GRID_HEIGHT; y += blockSize) {
-        for (let x = 0; x < GRID_WIDTH; x += blockSize) {
-            // Determine dominant terrain in this block
-            let terrainCounts = new Array(TERRAIN_COLORS.length).fill(0);
-            
-            // Count terrain types in this block
-            for (let by = 0; by < blockSize && y + by < GRID_HEIGHT; by++) {
-                for (let bx = 0; bx < blockSize && x + bx < GRID_WIDTH; bx++) {
-                    terrainCounts[grid[y + by][x + bx]]++;
-                }
-            }
-            
-            // Find most common terrain type
-            let dominantTerrain = 0;
-            let maxCount = 0;
-            
-            for (let t = 0; t < terrainCounts.length; t++) {
-                if (terrainCounts[t] > maxCount) {
-                    maxCount = terrainCounts[t];
-                    dominantTerrain = t;
-                }
-            }
-            
-            // Prioritize mold in visualization
-            if (terrainCounts[TERRAIN.MOLD] > 0) {
-                dominantTerrain = TERRAIN.MOLD;
-            }
-            
-            // Draw the block
-            minimapCtx.fillStyle = TERRAIN_COLORS[dominantTerrain];
-            minimapCtx.fillRect(
-                x * scaleX,
-                y * scaleY,
-                blockSize * scaleX,
-                blockSize * scaleY
-            );
-        }
-    }
-    
-    // Draw visible area indicator
-    const visibleTop = visibleAreaTop / CANVAS_HEIGHT * minimapHeight;
-    const visibleHeight = visibleAreaHeight / CANVAS_HEIGHT * minimapHeight;
-    
-    minimapCtx.strokeStyle = '#ffffff';
-    minimapCtx.lineWidth = 2;
-    minimapCtx.strokeRect(0, visibleTop, minimapWidth, visibleHeight);
+    // Update mold indicators
+    updateMoldIndicators();
 }
 
 // End game

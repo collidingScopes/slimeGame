@@ -28,30 +28,62 @@ canvas {
     margin-bottom: 50px;
 }
 
-#minimap-container {
+/* Mold indicators styling */
+#mold-indicators {
     position: fixed;
-    right: 20px;
-    top: 120px;
-    background: rgba(15, 23, 42, 0.8);
-    border: 3px solid #64748b;
-    border-radius: 8px;
-    padding: 10px;
-    z-index: 100;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    cursor: pointer;
+    left: 20px;
+    width: 40px;
+    height: 100%;
+    pointer-events: none;
+    z-index: 300;
 }
 
-#minimap {
-    display: block;
-    border: 2px solid #475569;
-    image-rendering: pixelated;
+.mold-indicator {
+    position: fixed;
+    width: 40px;
+    height: 40px;
+    background-color: #b13e3e;
+    display: none;
+    animation: pulse 1.5s infinite;
+    opacity: 0.8;
+    /* box-shadow: 0 0 10px #b54343, 0 0 15px #c73a3a; */
+    z-index: 300;
 }
 
-.minimap-label {
-    text-align: center;
-    font-size: 12px;
-    margin-bottom: 5px;
-    color: #ffd700;
+.mold-indicator:after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: #b13e3e;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: innerPulse 1.5s infinite alternate;
+}
+
+.mold-indicator.top {
+    top: 20px;
+    clip-path: polygon(0% 100%, 50% 0%, 100% 100%);
+    border-radius: 0;
+}
+
+.mold-indicator.bottom {
+    bottom: 20px;
+    clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+    border-radius: 0;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+@keyframes innerPulse {
+    0% { opacity: 0.5; }
+    100% { opacity: 1; }
 }
 
 #scoreboard {
