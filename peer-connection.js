@@ -23,16 +23,13 @@ class PeerConnectionManager {
       this.updateConnectionStatus('Connecting to PeerJS server...', 'connecting');
 
       try {
-          this.peer = new Peer({
-              // Using public PeerJS server - for production, consider setting up your own
-              host: 'peerjs-server.herokuapp.com',
-              secure: true,
-              port: 443,
+          // Use PeerJS's cloud server instead of Heroku
+          this.peer = new Peer(null, {
               debug: 1,
               config: {
                   'iceServers': [
-                      { url: 'stun:stun.l.google.com:19302' },
-                      { url: 'stun:stun1.l.google.com:19302' }
+                      { urls: 'stun:stun.l.google.com:19302' },
+                      { urls: 'stun:stun1.l.google.com:19302' }
                   ]
               }
           });
