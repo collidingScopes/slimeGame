@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mold Defense - Multiplayer Edition</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Mold Defense</h1>
+    <div id="scoreboard">
+        <div class="score-item">
+            <span>Mold Defeated</span>
+            <span id="defeated" class="score-value defeated">0</span>
+        </div>
+        <div class="score-item">
+            <span>Difficulty</span>
+            <span id="difficulty" class="score-value">1</span>
+        </div>
+        <div class="score-item">
+            <span>Active Mold</span>
+            <span id="active" class="score-value active">0</span>
+        </div>
+        <!-- Player count will be added dynamically by network.js -->
+    </div>
+    <div id="mold-indicators">
+        <div id="topMoldIndicator" class="mold-indicator top" title="Mold detected above!"></div>
+        <div id="bottomMoldIndicator" class="mold-indicator bottom" title="Mold detected below!"></div>
+    </div>
+    
+    <div id="connection-status">
+        <div id="status-indicator"></div>
+        <span id="status-text">Connecting...</span>
+    </div>
+    
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+        <div id="game-over">
+            <h2>Game Over!</h2>
+            <p>The mold has completely taken over the world.</p>
+            <p>Your final score: <span id="final-score">0</span></p>
+            <button id="restart-btn">Play Again</button>
+        </div>
+    </div>
+
+    <!-- Add seedrandom.js for consistent terrain generation -->
+    <script src="seedrandom.min.js"></script>
+    
+    <!-- Original game scripts -->
+    <script src="constants.js"></script>
+    <script src="terrain.js"></script>
+    <script src="renderer.js"></script>
+    
+    <!-- Network functionality -->
+    <script src="network.js"></script>
+    
+    <!-- Main game logic (these must be loaded after network.js) -->
+    <script src="mold.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>

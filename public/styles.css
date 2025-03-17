@@ -1,0 +1,169 @@
+/* Add these styles to your existing styles.css file */
+
+/* Connection status indicator */
+#connection-status {
+    position: fixed;
+    top: 10px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    background-color: rgba(15, 23, 42, 0.8);
+    padding: 8px 15px;
+    border-radius: 20px;
+    z-index: 300;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    font-size: 12px;
+    transition: background-color 0.3s ease;
+}
+
+#status-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 8px;
+    background-color: #ffd700; /* Yellow for connecting */
+    transition: background-color 0.3s ease;
+}
+
+.connected #status-indicator {
+    background-color: #5cb85c; /* Green for connected */
+}
+
+.connecting #status-indicator {
+    background-color: #ffd700; /* Yellow for connecting */
+    animation: pulse 1.5s infinite;
+}
+
+.disconnected #status-indicator {
+    background-color: #d9534f; /* Red for disconnected */
+}
+
+#status-text {
+    color: white;
+    font-family: inherit;
+    font-size: 12px;
+}
+
+/* Player count styling */
+.players {
+    color: #00bfff; /* Bright blue for player count */
+}
+
+/* Host badge */
+.host-badge {
+    background-color: #ffcb05;
+    color: #3c5aa6;
+    font-size: 10px;
+    padding: 3px 6px;
+    border-radius: 10px;
+    margin-left: 10px;
+    font-weight: bold;
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+    from {
+        box-shadow: 0 0 5px rgba(255, 203, 5, 0.5);
+    }
+    to {
+        box-shadow: 0 0 10px rgba(255, 203, 5, 0.8);
+    }
+}
+
+/* Cleansing effect - multiplayer version */
+.cleanse-animation {
+    position: absolute;
+    pointer-events: none;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+    animation: expand 0.6s ease-out forwards;
+    z-index: 100;
+}
+
+@keyframes expand {
+    0% {
+        transform: scale(0.5);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+/* Network status messages */
+.network-message {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(15, 23, 42, 0.8);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    z-index: 400;
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.network-message.show {
+    opacity: 1;
+}
+
+/* Multiplayer scoreboard enhancement */
+#scoreboard {
+    padding: 15px 20px;
+}
+
+.score-item {
+    position: relative;
+}
+
+.score-value {
+    transition: all 0.3s ease;
+}
+
+.score-value.highlight {
+    transform: scale(1.2);
+}
+
+/* Player actions indicator */
+.player-action {
+    position: absolute;
+    pointer-events: none;
+    font-size: 10px;
+    color: white;
+    background-color: rgba(60, 90, 166, 0.8);
+    padding: 3px 6px;
+    border-radius: 10px;
+    z-index: 200;
+    animation: fadeUp 1s ease-out forwards;
+}
+
+@keyframes fadeUp {
+    0% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+}
+
+/* Pulse animation for indicators */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 0.7;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
