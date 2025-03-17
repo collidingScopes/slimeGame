@@ -3,11 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mold Defense - Pokémon Style</title>
+    <title>Multiplayer Mold Defense</title>
     <link rel="stylesheet" href="styles.css">
+    <!-- PeerJS library for P2P connections -->
+    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
 </head>
 <body>
-    <h1>Mold Defense</h1>
+    <h1>Multiplayer Mold Defense</h1>
+    
+    <!-- Connection status and controls -->
+    <div id="connection-panel">
+        <div class="connection-item">
+            <span>Status:</span>
+            <span id="connection-status" class="disconnected">Disconnected</span>
+        </div>
+        <div class="connection-item">
+            <span>Your Lobby ID:</span>
+            <span id="lobby-id" class="lobby-id">-</span>
+        </div>
+        <div class="connection-item">
+            <button id="join-lobby" class="join-button">Join Existing Lobby</button>
+        </div>
+    </div>
+    
     <div id="scoreboard">
         <div class="score-item">
             <span>Mold Defeated</span>
@@ -21,7 +39,12 @@
             <span>Active Mold</span>
             <span id="active" class="score-value active">0</span>
         </div>
+        <div class="score-item">
+            <span>Players</span>
+            <span id="player-count" class="score-value players">1</span>
+        </div>
     </div>
+    
     <div id="mold-indicators">
         <div id="topMoldIndicator" class="mold-indicator top" title="Mold detected above!"></div>
         <div id="bottomMoldIndicator" class="mold-indicator bottom" title="Mold detected below!"></div>
@@ -39,8 +62,9 @@
 
     <script src="constants.js"></script>
     <script src="terrain.js"></script>
-    <script src="mold.js"></script>
+    <script src="peer-connection.js"></script>
     <script src="renderer.js"></script>
+    <script src="mold.js"></script>
     <script src="game.js"></script>
 </body>
 </html>
