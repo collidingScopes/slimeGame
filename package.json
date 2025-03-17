@@ -1,0 +1,14 @@
+{
+  "name": "mold-defense-multiplayer",
+  "version": "1.0.0",
+  "description": "Multiplayer version of Mold Defense game",
+  "scripts": {
+    "dev": "netlify dev"
+  },
+  "dependencies": {
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "netlify-cli": "^15.0.0"
+  }
+}

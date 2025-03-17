@@ -1,0 +1,32 @@
+# Netlify configuration file with Edge Functions support for WebSockets
+
+[build]
+  publish = "public"
+  functions = "functions"
+
+# Main Edge Function for WebSocket support
+[[edge_functions]]
+  path = "/ws"
+  function = "websocket"
+
+# Redirect API requests to Netlify Functions
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+# SPA fallback
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Headers for security and caching
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "no-referrer-when-downgrade"
+    Content-Security-Policy = "default-src 'self'; connect-src 'self' wss://*.netlify.app ws://localhost:* http://localhost:*; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data:;"

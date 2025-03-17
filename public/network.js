@@ -13,13 +13,14 @@ let statusTextEl;
 
 // Get the WebSocket server URL
 function getServerUrl() {
-  // For local development
-  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      return `ws://${window.location.hostname}:3000`;
-  }
-  
-  // For Netlify deployment - using the site's own URL but with wss protocol
-  return `wss://${window.location.host}/ws`;
+    // For local development
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        return `ws://${window.location.hostname}:3000`;
+    }
+    
+    // For Netlify deployment - using the Edge Function WebSocket endpoint
+    // This works with Netlify's Edge Functions
+    return `wss://${window.location.host}/ws`;
 }
 
 // Initialize network connection
